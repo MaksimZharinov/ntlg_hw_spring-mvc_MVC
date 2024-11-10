@@ -4,9 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
@@ -19,20 +17,30 @@ public class PostRepositoryStubImpl implements PostRepository {
         if (REPO.isEmpty()) {
             return Collections.emptyList();
         }
-        return (List<Post>) REPO.values();
+        var repoWithoutDelete = new LinkedList<Post>();
+        for (Post post : REPO.values()) {
+            if (!post.isDelete()) {
+                repoWithoutDelete.add(post);
+            }
+        }
+        return repoWithoutDelete;
     }
 
     public Optional<Post> getById(long id) {
         if (REPO.isEmpty()) {
             return Optional.empty();
         }
+        if (REPO.get(id).isDelete()) {
+            throwEx();
+        }
         return Optional.ofNullable(REPO.get(id));
     }
 
     public Post save(Post post) {
         if (post.getId() != 0) {
-            if (!REPO.containsKey(post.getId())) {
-                throw new NotFoundException("Post with such ID does not exist");
+            if (!REPO.containsKey(post.getId()) ||
+                    !REPO.get(post.getId()).isDelete()) {
+                throwEx();
             }
             return REPO.replace(post.getId(), post);
         }
@@ -44,9 +52,13 @@ public class PostRepositoryStubImpl implements PostRepository {
 
     public void removeById(long id) {
         if (!REPO.containsKey(id)) {
-            throw new NotFoundException("Post with such ID does not exist");
+            throwEx();
         }
-        REPO.remove(id);
+        REPO.get(id).setDelete(true);
         countPosts--;
+    }
+
+    private void throwEx() {
+        throw new NotFoundException("Post with such ID does not exist");
     }
 }
