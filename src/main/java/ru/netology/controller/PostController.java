@@ -1,6 +1,7 @@
 package ru.netology.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 import ru.netology.service.PostService;
 
@@ -21,17 +22,29 @@ public class PostController {
   }
 
   @GetMapping("/{id}")
-  public Post getById(@PathVariable long id) {
-    return service.getById(id);
+  public Post getById(@PathVariable long id) throws NotFoundException {
+    try {
+      return service.getById(id);
+    } catch (NotFoundException e) {
+      throw new NotFoundException();
+    }
   }
 
   @PostMapping
-  public Post save(@RequestBody Post post) {
-    return service.save(post);
+  public Post save(@RequestBody Post post) throws NotFoundException {
+    try {
+      return service.save(post);
+    } catch (NotFoundException e) {
+      throw new NotFoundException();
+    }
   }
 
   @DeleteMapping("/{id}")
-  public void removeById(long id) {
-    service.removeById(id);
+  public void removeById(@PathVariable long id) throws NotFoundException {
+    try {
+      service.removeById(id);
+    } catch (NotFoundException e) {
+      throw new NotFoundException();
+    }
   }
 }
