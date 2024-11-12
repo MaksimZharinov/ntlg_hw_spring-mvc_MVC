@@ -1,5 +1,9 @@
 package ru.netology.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(code = HttpStatus.NOT_FOUND)
 public class NotFoundException extends RuntimeException {
   public NotFoundException() {
   }
@@ -16,7 +20,9 @@ public class NotFoundException extends RuntimeException {
     super(cause);
   }
 
-  public NotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+  public NotFoundException(String message, Throwable cause,
+                           boolean enableSuppression,
+                           boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 }
